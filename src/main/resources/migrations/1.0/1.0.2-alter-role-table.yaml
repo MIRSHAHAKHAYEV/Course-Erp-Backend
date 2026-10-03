@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: alter-role-table
+      author: miri
+      changes:
+        - dropNotNullConstraint:
+            columnName: owner_id
+            tableName: roles

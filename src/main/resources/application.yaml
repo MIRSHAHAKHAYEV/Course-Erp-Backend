@@ -1,0 +1,11 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  profiles:
+    active: local
+  liquibase:
+    enabled: true
+    change-log: migrations/changelog-master.yaml
+  application:
+    name: demo1

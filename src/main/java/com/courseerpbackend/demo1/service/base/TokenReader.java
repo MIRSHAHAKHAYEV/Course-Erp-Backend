@@ -1,0 +1,5 @@
+package com.courseerpbackend.demo1.service.base;
+
+public interface TokenReader <T>{
+    T read(String token);
+}
