@@ -4,6 +4,7 @@ import com.courseerpbackend.demo1.properties.security.SecurityProperties;
 import com.courseerpbackend.demo1.entity.user.User;
 import com.courseerpbackend.demo1.service.base.TokenGenerator;
 import com.courseerpbackend.demo1.service.base.TokenReader;
+import com.courseerpbackend.demo1.service.getters.EmailGetter;
 import com.courseerpbackend.demo1.utils.PublicPrivateKeyUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -14,17 +15,19 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+import static com.courseerpbackend.demo1.constants.TokenConstants.EMAIL_KEY;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
 
-public class AccessTokenManager implements TokenGenerator<User>, TokenReader<Claims> {
+public class AccessTokenManager implements TokenGenerator<User>, TokenReader<Claims>, EmailGetter {
     private final SecurityProperties securityProperties;
     @Override
     public String generate(User obj) {
 
         Claims claims = Jwts.claims();
-        claims.put("email",obj.getEmail());
+        claims.put(EMAIL_KEY,obj.getEmail());
 
         Date now =new Date();
         Date exp =new Date(now.getTime() + securityProperties.getJwt().getAccessTokenValidityTime());
@@ -45,5 +48,10 @@ public class AccessTokenManager implements TokenGenerator<User>, TokenReader<Cla
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    @Override
+    public String getEmail(String token) {
+        return read(token).get(EMAIL_KEY,String.class);
     }
 }

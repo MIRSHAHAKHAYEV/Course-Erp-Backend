@@ -5,6 +5,7 @@ import com.courseerpbackend.demo1.properties.security.SecurityProperties;
 import com.courseerpbackend.demo1.entity.user.User;
 import com.courseerpbackend.demo1.service.base.TokenGenerator;
 import com.courseerpbackend.demo1.service.base.TokenReader;
+import com.courseerpbackend.demo1.service.getters.EmailGetter;
 import com.courseerpbackend.demo1.utils.PublicPrivateKeyUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,20 +16,23 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+import static com.courseerpbackend.demo1.constants.TokenConstants.EMAIL_KEY;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class RefreshTokenManager implements TokenGenerator<RefreshTokenDto>, TokenReader<Claims> {
+public class RefreshTokenManager implements TokenGenerator<RefreshTokenDto>, TokenReader<Claims>, EmailGetter {
     private final SecurityProperties securityProperties;
+
     @Override
     public String generate(RefreshTokenDto obj) {
         final User user = obj.getUser();
         Claims claims = Jwts.claims();
-        claims.put("email",user.getEmail());
-        claims.put("type","REFRESH_TOKEN");
+        claims.put(EMAIL_KEY, user.getEmail());
+        claims.put("type", "REFRESH_TOKEN");
 
-        Date now =new Date();
-        Date exp =new Date(now.getTime() + securityProperties.getJwt().getRefreshTokenValidityTime(obj.isRememberMe()));
+        Date now = new Date();
+        Date exp = new Date(now.getTime() + securityProperties.getJwt().getRefreshTokenValidityTime(obj.isRememberMe()));
 
         return Jwts.builder()
                 .setSubject(String.valueOf(user.getId()))
@@ -41,10 +45,20 @@ public class RefreshTokenManager implements TokenGenerator<RefreshTokenDto>, Tok
 
     @Override
     public Claims read(String token) {
-        return Jwts.parserBuilder()
+        Claims tokenData = Jwts.parserBuilder()
                 .setSigningKey(PublicPrivateKeyUtils.getPublicKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+
+        if(!tokenData.get("type",String.class).equals("REFRESH_TOKEN")){
+            throw new RuntimeException("Invalid type of token");
+        }
+        return tokenData;
+    }
+
+    @Override
+    public String getEmail(String token) {
+        return read(token).get(EMAIL_KEY,String.class);
     }
 }
