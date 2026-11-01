@@ -1,6 +1,7 @@
 package com.courseerpbackend.demo1.service.user;
 
 import com.courseerpbackend.demo1.entity.user.User;
+import com.courseerpbackend.demo1.exception.BaseException;
 import com.courseerpbackend.demo1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,11 +15,18 @@ public class UserServiceImpl implements IUserService{
 
     @Override
     public User getByEmail(String email) {
-       return userRepository.findUserByEmailAndIsDeletedFalse(email).orElseThrow(()->new UsernameNotFoundException("user not found: "+email));
+       return userRepository.findUserByEmailAndIsDeletedFalse(email).orElseThrow(
+               ()-> BaseException.notFound(User.class.getSimpleName(),"email",email)
+       );
     }
 
     @Override
     public void insert(User user) {
         userRepository.save(user);
+    }
+
+    @Override
+    public boolean checkByEmail(String email) {
+        return userRepository.findUserByEmailAndIsDeletedFalse(email).isPresent();
     }
 }

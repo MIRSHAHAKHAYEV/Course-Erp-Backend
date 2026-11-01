@@ -5,3 +5,7 @@ databaseChangeLog:
       file: /migrations/1.0/1.0.1-role-tables.yaml
   - include:
       file: /migrations/1.0/1.0.2-alter-role-table.yaml
+  - include:
+      file: /migrations/1.0/1.0.3-course-table.yaml
+  - include:
+      file: /migrations/1.0/1.0.4-insert-default-role.yaml

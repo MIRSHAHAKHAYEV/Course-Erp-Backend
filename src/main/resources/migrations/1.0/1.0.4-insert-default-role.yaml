@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-default-role
+      author: miri
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: name
+                  value: OWNER
+              - column:
+                  name: description
+                  value: Default role for user

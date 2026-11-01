@@ -5,8 +5,10 @@ import com.courseerpbackend.demo1.dto.response.LoginResponse;
 import com.courseerpbackend.demo1.dto.response.RefreshTokenDto;
 import com.courseerpbackend.demo1.dto.security.LoginPayload;
 import com.courseerpbackend.demo1.dto.security.RefreshTokenPayload;
+import com.courseerpbackend.demo1.dto.security.SignUpPayload;
 import com.courseerpbackend.demo1.entity.user.User;
 import com.courseerpbackend.demo1.service.security.AccessTokenManager;
+import com.courseerpbackend.demo1.service.security.AuthBusinessServiceImpl;
 import com.courseerpbackend.demo1.service.security.IAuthBusinessService;
 import com.courseerpbackend.demo1.service.security.RefreshTokenManager;
 import com.courseerpbackend.demo1.service.user.UserServiceImpl;
@@ -43,6 +45,11 @@ public class AuthController {
     public BaseResponse<Void> logout(){
         authBusinessService.logout();
         return BaseResponse.success();
+    }
+    @PostMapping("/sign-up")
+    public BaseResponse<Void> signUp(@RequestBody SignUpPayload payload){
+            authBusinessService.signUp(payload);
+            return BaseResponse.success();
     }
 
 }
